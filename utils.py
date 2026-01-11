@@ -107,13 +107,15 @@ def listDispChoose(l:list):
         selection = 0
     return(l[selection])
 
-def get_acc_by_name(name:str,suffix:str):
+def get_acc_by_name(name:str):
     log("getting account by name")
-    return acc(rt.acc_by_rid(name,suffix))
+    nameTag = name[:name.index("#")],name[name.index("#")+1:]
+    #log(f"[*]{nameTag}")
+    return acc(rt.acc_by_rid(nameTag[0],nameTag[1]))
         
-def get_games_by_name(name:str,suffix:str):
+def get_games_by_name(name:str):
     log("getting games by name")
-    x = get_acc_by_name(name,suffix)
+    x = get_acc_by_name(name)
     return x.get_games()
 
 def key_value_paths(data):
@@ -137,10 +139,14 @@ def key_value_paths(data):
     walk(data)
     return results
 
-def write_strings_to_file(strings,fn:str):
-    with open(f"{fn}.txt", "w", encoding="utf-8") as f:
+import os
+
+def write_strings_to_file(strings, fn: str):
+    os.makedirs("data", exist_ok=True)
+    path = os.path.join("data", f"{fn}.txt")
+
+    with open(path, "w", encoding="utf-8") as f:
         for s in strings:
-            #log(f"[{c}]{s}")
             if len(s[0]) == 1:
                 f.write(f"{s}\n")
          
@@ -231,5 +237,14 @@ def save_list_to_text(filename_str, data_list):
     with open(file_name, "w", encoding="utf-8") as f:
         for item in data_list:
             f.write(f"{item}\n")
+            
+def curated_to_list(curatedMatches):
+    t = []
+    for x in curatedMatches:
+        t.append(x)
+        for y in x:
+            if isinstance(y,list):
+                t.append(f"{y[:2]} {get_augments_by_id(y[2])}")
+    return t
     
 

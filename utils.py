@@ -79,7 +79,7 @@ def log(s:str):
 
 def text_parse(text:str):
     j = js.dumps(text,sort_keys=True)
-    return
+    return j
        
 def save_game(text, saves:int, ext="json"):
     filename = "game"
@@ -137,9 +137,7 @@ def key_value_paths(data):
                 # primitives in lists have no keys → ignored
 
     walk(data)
-    return results
-
-import os
+    return results 
 
 def write_strings_to_file(strings, fn: str):
     os.makedirs("data", exist_ok=True)

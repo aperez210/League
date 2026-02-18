@@ -1,0 +1,1 @@
+need uv for backend and node for frontend

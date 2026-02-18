@@ -109,7 +109,8 @@ def listDispChoose(l:list):
 
 def get_acc_by_name(name:str):
     log("getting account by name")
-    nameTag = name[:name.index("#")],name[name.index("#")+1:]
+    nameTag = name.split('#')
+    print(name, nameTag)
     #log(f"[*]{nameTag}")
     return acc(rt.acc_by_rid(nameTag[0],nameTag[1]))
         

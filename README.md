@@ -1,1 +1,1 @@
-need uv for backend and node for frontend
+need uv for backend and bun for frontend

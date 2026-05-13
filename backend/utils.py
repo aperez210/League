@@ -149,7 +149,6 @@ def write_strings_to_file(strings, fn: str):
             if len(s[0]) == 1:
                 f.write(f"{s}\n")
          
-q = []                    
 def analyze_matches(matches:list):
     game_info_list = []
     
@@ -159,24 +158,20 @@ def analyze_matches(matches:list):
         participants_info = match_info["participants"]
         
         for x in range(0,len(participants_info)):
-            players_list = []
-            players_augments = []
             player_x = participants_info[x]
-            players_list.append(player_x[f"riotIdGameName"])
-            #players_list(player_x["riotIdTagline"])
-            players_list.append(player_x["championName"])
+            player_dict = {
+                "name": player_x.get("riotIdGameName", ""),
+                "tagline": player_x.get("riotIdTagline", ""),
+                "champion": player_x.get("championName", ""),
+                "augments": []
+            }
             
             for y in range(1,7):
-                m = player_x[f"playerAugment{y}"]
-                players_augments.append(m)
+                m = player_x.get(f"playerAugment{y}", 0)
+                player_dict["augments"].append(m)
                 
-            players_list.append(players_augments)
-            q.append(players_augments)
-            out.append(players_list)
+            out.append(player_dict)
         game_info_list.append(out)
-    """for x in range(len(game_info_list)):
-        log(f"{game_info_list[x][0:1]}")
-    """
     return game_info_list
 
 def make_keypath_file(gameList:list):
@@ -238,12 +233,28 @@ def save_list_to_text(filename_str, data_list):
             f.write(f"{item}\n")
             
 def curated_to_list(curatedMatches):
-    t = []
-    for x in curatedMatches:
-        t.append(x)
-        for y in x:
-            if isinstance(y,list):
-                t.append(f"{y[:2]} {get_augments_by_id(y[2])}")
-    return t
+    formatted_games = []
+    for game in curatedMatches:
+        formatted_players = []
+        for player in game:
+            augment_data = get_augments_by_id(player["augments"])
+            formatted_augments = []
+            for aug in augment_data:
+                if len(aug) >= 3:
+                    formatted_augments.append({
+                        "name": aug[0],
+                        "id": aug[1],
+                        "rarity": aug[2]
+                    })
+                else:
+                    formatted_augments.append(None)
+                    
+            player["augments_data"] = formatted_augments
+            formatted_players.append(player)
+            
+        formatted_games.append({
+            "players": formatted_players
+        })
+    return formatted_games
     
 

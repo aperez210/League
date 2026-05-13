@@ -39,22 +39,6 @@ For more installation options, visit the [UV installation guide](https://docs.as
 
 ## Usage
 
-Provide instructions on how to run the project. For example:
-
-To run the main application:
-```bash
-uv run python main.py
-```
-
-Or if using FastAPI:
 ```bash
 uv run fastapi dev main.py
 ```
-
-## Contributing
-
-Guidelines for contributing to the project.
-
-## License
-
-Specify the license here.

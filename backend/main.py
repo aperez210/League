@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware # Import this
 import utils as ut
 
@@ -13,17 +13,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+api_router = APIRouter(prefix="/api")
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/games/{riotID}")
+@api_router.get("/games/{riotID}")
 async def getGames(riotID: str):
     # Note: If the ID comes in as "Name%23Tag", FastAPI usually decodes it automatically.
     # If you run into issues, print(riotID) here to check.
     games = ut.get_games_by_name(riotID)
     curatedMatches = ut.analyze_matches(games)
     return ut.curated_to_list(curatedMatches)
+
+app.include_router(api_router)
 
 # myGames = ut.get_games_by_name("Crackpipe Perez#NA1")
 # curatedMatches = ut.analyze_matches(myGames)

@@ -154,7 +154,7 @@ def analyze_matches(matches:list):
     
     for match in matches:
         out = []
-        match_info = js.loads(rt.match_info(match))['info']
+        match_info = rt.match_info(match)['info']
         participants_info = match_info["participants"]
         
         for x in range(0,len(participants_info)):

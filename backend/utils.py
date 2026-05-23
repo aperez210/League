@@ -154,8 +154,14 @@ def analyze_matches(matches:list):
     
     for match in matches:
         out = []
-        match_info = rt.match_info(match)['info']
-        participants_info = match_info["participants"]
+        match_data = rt.match_info(match)
+        
+        if isinstance(match_data, str) or 'info' not in match_data:
+            log(f"Failed to get valid match info: {match_data}")
+            continue
+            
+        match_info = match_data['info']
+        participants_info = match_info.get("participants", [])
         
         for x in range(0,len(participants_info)):
             player_x = participants_info[x]
@@ -171,7 +177,13 @@ def analyze_matches(matches:list):
                 player_dict["augments"].append(m)
                 
             out.append(player_dict)
-        game_info_list.append(out)
+            
+        game_dict = {
+            "gameCreation": match_info.get("gameCreation", 0),
+            "players": out
+        }
+        game_info_list.append(game_dict)
+        
     return game_info_list
 
 def make_keypath_file(gameList:list):
@@ -236,7 +248,7 @@ def curated_to_list(curatedMatches):
     formatted_games = []
     for game in curatedMatches:
         formatted_players = []
-        for player in game:
+        for player in game["players"]:
             augment_data = get_augments_by_id(player["augments"])
             formatted_augments = []
             for aug in augment_data:
@@ -253,6 +265,7 @@ def curated_to_list(curatedMatches):
             formatted_players.append(player)
             
         formatted_games.append({
+            "gameCreation": game.get("gameCreation", 0),
             "players": formatted_players
         })
     return formatted_games

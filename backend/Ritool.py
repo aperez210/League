@@ -18,10 +18,13 @@ def acc_by_rid(rid:str,tag:str):
     else:
         return(f"Request failed with status code {response.status_code}") 
     
-def games_by_puuid(puuid:str):
+def games_by_puuid(puuid:str, queue_id:int=None):
     # get 20 games from riot API using puuid, returns matches from all queues
    #log("attempting to get games by puuid")
-    s = f"{RIOT}/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=20&api_key={API_KEY}"
+    if queue_id is not None:
+        s = f"{RIOT}/lol/match/v5/matches/by-puuid/{puuid}/ids?queue={queue_id}&start=0&count=20&api_key={API_KEY}"
+    else:
+        s = f"{RIOT}/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=20&api_key={API_KEY}"
     response = requests.get(s)
     if response.status_code == 200:
         print("success")
@@ -31,7 +34,7 @@ def games_by_puuid(puuid:str):
         
         return(f"Request failed with status code {response.status_code}")
     
-def  match_info(match_id:str):
+def match_info(match_id:str):
     #log("attempting to get match info")
     response = requests.get(f"{RIOT}/lol/match/v5/matches/{match_id}?api_key={API_KEY}")
     if response.status_code == 200:

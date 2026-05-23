@@ -1,6 +1,12 @@
-from fastapi import FastAPI
+import os
+
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware # Import this
+from dotenv import load_dotenv
 import utils as ut
+from telemetry import collect_riot_telemetry
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -24,6 +30,39 @@ async def getGames(riotID: str):
     games = ut.get_games_by_name(riotID)
     curatedMatches = ut.analyze_matches(games)
     return ut.curated_to_list(curatedMatches)
+
+
+@app.get("/telemetry/{riotID}")
+async def get_telemetry(
+    riotID: str,
+    maxMatches: int = Query(default=500, ge=1, le=1000),
+):
+    api_key = os.getenv("ARENA_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Missing ARENA_KEY environment variable")
+
+    try:
+        payload = collect_riot_telemetry(
+            riot_id=riotID,
+            api_key=api_key,
+            max_matches=maxMatches,
+            augments_path="augments.json",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Telemetry collection failed: {exc}") from exc
+
+    return payload
+
+
+@app.get("/telemetry/{riotID}/summary")
+async def get_telemetry_summary(
+    riotID: str,
+    maxMatches: int = Query(default=500, ge=1, le=1000),
+):
+    full = await get_telemetry(riotID=riotID, maxMatches=maxMatches)
+    return full["summary"]
 
 # myGames = ut.get_games_by_name("Crackpipe Perez#NA1")
 # curatedMatches = ut.analyze_matches(myGames)

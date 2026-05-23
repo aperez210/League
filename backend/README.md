@@ -51,6 +51,22 @@ Or if using FastAPI:
 uv run fastapi dev main.py
 ```
 
+Telemetry endpoints:
+
+- `GET /telemetry/{riotID}`
+   - Example: `/telemetry/Crackpipe%20Perez%23NA1`
+   - Query param: `maxMatches` (default `500`, max `1000`)
+   - Returns summary plus parsed match rows.
+
+- `GET /telemetry/{riotID}/summary`
+   - Example: `/telemetry/Crackpipe%20Perez%23NA1/summary`
+   - Query param: `maxMatches` (default `500`, max `1000`)
+   - Returns summary only.
+
+Environment variables:
+
+- `ARENA_KEY`: Riot API key used by telemetry endpoints.
+
 ## Contributing
 
 Guidelines for contributing to the project.
